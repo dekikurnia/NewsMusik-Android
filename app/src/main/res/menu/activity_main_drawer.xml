@@ -3,33 +3,63 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Import" />
-        <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
-        <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
-        <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+            android:id="@+id/news"
+            android:title="News" />
     </group>
 
-    <item android:title="Communicate">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/legend"
+            android:title="Legend" />
+    </group>
+
+    <item android:title="Exclusive">
         <menu>
             <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
+                android:id="@+id/interview"
+                android:title="Interview" />
             <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+                android:id="@+id/story"
+                android:title="Story" />
+        </menu>
+    </item>
+
+    <item android:title="Profile">
+        <menu>
+            <item
+                android:id="@+id/male"
+                android:title="Male" />
+            <item
+                android:id="@+id/female"
+                android:title="Female" />
+            <item
+                android:id="@+id/groupband"
+                android:title="Group Band" />
+        </menu>
+    </item>
+
+    <item android:title="Reviews">
+        <menu>
+            <item
+                android:id="@+id/album"
+                android:title="Album" />
+            <item
+                android:id="@+id/moviesandtv"
+                android:title="Movies and Tv" />
+        </menu>
+    </item>
+
+    <item android:title="Backstage">
+        <menu>
+            <item
+                android:id="@+id/backstagestory"
+                android:title="Backstage Story" />
+            <item
+                android:id="@+id/fashion"
+                android:title="Fashion" />
+            <item
+                android:id="@+id/eventorganizer"
+                android:title="Event Organizer" />
         </menu>
     </item>
 
