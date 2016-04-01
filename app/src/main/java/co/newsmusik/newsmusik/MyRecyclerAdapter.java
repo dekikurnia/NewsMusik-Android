@@ -1,6 +1,7 @@
 package co.newsmusik.newsmusik;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -18,9 +19,12 @@ import java.util.List;
 public class MyRecyclerAdapter extends RecyclerView.Adapter<FeedListRowHolder> {
 
 
+
     private List<FeedItem> feedItemList;
 
     private Context mContext;
+    private static final String TAG_PICTURE = "extra_fields_search";
+    private static final String TAG_INTROTEXT = "introtext";
 
     public MyRecyclerAdapter(Context context, List<FeedItem> feedItemList) {
         this.feedItemList = feedItemList;
@@ -36,7 +40,7 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<FeedListRowHolder> {
     }
 
     @Override
-    public void onBindViewHolder(FeedListRowHolder feedListRowHolder, int i) {
+    public void onBindViewHolder(FeedListRowHolder feedListRowHolder, final int i) {
         FeedItem feedItem = feedItemList.get(i);
 
         Glide.with(mContext).load(feedItem.getThumbnail())
@@ -48,9 +52,15 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<FeedListRowHolder> {
         feedListRowHolder.category.setText(Html.fromHtml(feedItem.getCategory()));
         feedListRowHolder.datetime.setText(Html.fromHtml(feedItem.getDate()));
 
-
-        feedListRowHolder.cardview.setOnClickListener(clickListener);
-
+        feedListRowHolder.cardview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(view.getContext(), ContentDetail.class);
+                intent.putExtra(TAG_PICTURE,feedItemList.get(i).getThumbnail());
+                intent.putExtra(TAG_INTROTEXT,feedItemList.get(i).getContentDetail());
+                view.getContext().startActivity(intent);
+            }
+        });
         feedListRowHolder.cardview.setTag(feedListRowHolder);
     }
 
@@ -59,14 +69,5 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<FeedListRowHolder> {
         return (null != feedItemList ? feedItemList.size() : 0);
     }
 
-    View.OnClickListener clickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            FeedListRowHolder holder = (FeedListRowHolder) view.getTag();
-            int position = holder.getPosition();
 
-            FeedItem feedItem = feedItemList.get(position);
-            //Toast.makeText(mContext, feedItem.getTitle(), Toast.LENGTH_SHORT).show();
-        }
-    };
 }

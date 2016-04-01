@@ -16,7 +16,8 @@
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:weightSum="1"
-        android:background="#fbf9f9">
+        android:background="#fbf9f9"
+        android:clickable="false">
 
         <ImageView
             android:id="@+id/thumbnail"
