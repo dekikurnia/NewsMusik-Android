@@ -12,6 +12,7 @@ public class FeedItem implements Serializable {
     private String category;
     private String date;
     private String contentDetail;
+    private String imageCredit;
 
     public String getTitle() {
         return title;
@@ -53,4 +54,11 @@ public class FeedItem implements Serializable {
         this.contentDetail = contentDetail;
     }
 
+    public String getImageCredit() {
+        return imageCredit;
+    }
+
+    public void setImageCredit(String imageCredit) {
+        this.imageCredit = imageCredit;
+    }
 }

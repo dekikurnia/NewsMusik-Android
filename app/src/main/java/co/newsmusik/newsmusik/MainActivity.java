@@ -1,15 +1,18 @@
 package co.newsmusik.newsmusik;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Intent;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.SyncStateContract;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.RecyclerView;
-import android.telecom.Call;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -20,19 +23,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -50,7 +50,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final String TAG_DATE = "created";
     private static final String TAG_INTROTEXT = "introtext";
     private static final String TAG_CATEGORY = "name";
-    TextView textView;
+    private static final String TAG_IMAGECREDITS = "image_credits";
+    ImageButton imgShare;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +61,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         /* Initialize recyclerview */
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        textView = (TextView) findViewById(R.id.title);
 
         /*Downloading data from below url*/
         final String url = "http://api.newsmusik.co/articles";
@@ -70,8 +71,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                mRecyclerView.smoothScrollToPosition(0);
             }
         });
 
@@ -83,6 +83,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+
+        imgShare = (ImageButton) findViewById(R.id.imageButton);
+        imgShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+
+        if(!isNetworkAvailable()){
+            //Toast.makeText(this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+            new AlertDialog.Builder(this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle("Warning")
+                    .setMessage("Please check your internet connection")
+                    .setPositiveButton("Close", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+
+                    })
+                    .show();
+        }
+
     }
 
     @Override
@@ -145,14 +173,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-    public class AsyncHttpTask extends AsyncTask <String, Void, Integer> {
+    public class AsyncHttpTask extends AsyncTask<String, Void, Integer> {
         @Override
         protected void onPreExecute() {
-            pd=new ProgressDialog(MainActivity.this);
-            pd.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            pd.setMessage("Loading, please wait...");
-            pd.setCancelable(false);
-            pd.show();
+                pd = new ProgressDialog(MainActivity.this);
+                pd.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                pd.setMessage("Loading, please wait ...");
+                pd.setCancelable(false);
+                pd.show();
         }
 
         @Override
@@ -197,7 +225,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         @Override
         protected void onPostExecute(Integer result) {
-
             pd.dismiss();
 
             /* Download complete. Lets update UI */
@@ -211,6 +238,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         }
     }
+
 
     private void parseResult(String result) {
         try {
@@ -231,12 +259,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 item.setCategory(post.optString(TAG_CATEGORY));
                 item.setDate(post.optString(TAG_DATE));
                 item.setContentDetail(post.optString(TAG_INTROTEXT));
+                item.setImageCredit(post.optString(TAG_IMAGECREDITS));
                 feedItemList.add(item);
             }
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean isNetworkAvailable() {
+        ConnectivityManager cm = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+        // if no network is available networkInfo will be null
+        // otherwise check if we are connected
+        if (networkInfo != null && networkInfo.isConnected()) {
+            return true;
+        }
+        return false;
     }
 
 }
