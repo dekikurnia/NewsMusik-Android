@@ -37,6 +37,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import android.support.v4.widget.SwipeRefreshLayout;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = "NewsMusik";
@@ -51,8 +52,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final String TAG_INTROTEXT = "introtext";
     private static final String TAG_CATEGORY = "name";
     private static final String TAG_IMAGECREDITS = "image_credits";
-    ImageButton imgShare;
-
+    SwipeRefreshLayout swipe;
+    private static final String TAG = MainActivity.class.getSimpleName();
+    private int offSet = 0;
+    int no;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +64,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         /* Initialize recyclerview */
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        swipe = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
 
         /*Downloading data from below url*/
         final String url = "http://api.newsmusik.co/articles";
@@ -84,18 +89,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-
-        imgShare = (ImageButton) findViewById(R.id.imageButton);
-        imgShare.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
-
-
         if(!isNetworkAvailable()){
-            //Toast.makeText(this, "No Internet Connection", Toast.LENGTH_SHORT).show();
             new AlertDialog.Builder(this)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setTitle("Warning")
@@ -119,7 +113,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Yakin keluar aplikasi ?")
+                    .setCancelable(false)
+                    .setPositiveButton("Ya", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            MainActivity.this.finish();
+                        }
+                    })
+                    .setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
         }
     }
 

@@ -68,7 +68,11 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<FeedListRowHolder> {
         feedListRowHolder.imgShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                switch (view.getId()) {
+                    case R.id.imageShare:
+                        shareTextUrl();
+                        break;
+                }
             }
         });
 
@@ -80,4 +84,16 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<FeedListRowHolder> {
         return (null != feedItemList ? feedItemList.size() : 0);
     }
 
+
+    private void shareTextUrl() {
+        Intent share = new Intent(android.content.Intent.ACTION_SEND);
+        share.setType("text/plain");
+        share.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+
+        // Add data to the intent, the receiving app will decide
+        // what to do with it.
+        share.putExtra(Intent.EXTRA_TEXT, "http://www.newsmusik.co");
+
+        mContext.startActivity(Intent.createChooser(share, "Share link!"));
+    }
 }

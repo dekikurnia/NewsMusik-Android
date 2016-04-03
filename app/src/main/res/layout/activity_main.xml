@@ -8,6 +8,10 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
     <include
         layout="@layout/app_bar_main"
@@ -22,5 +26,7 @@
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_main"
         app:menu="@menu/activity_main_drawer" />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </android.support.v4.widget.DrawerLayout>
