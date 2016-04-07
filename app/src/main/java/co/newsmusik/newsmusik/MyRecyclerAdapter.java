@@ -19,12 +19,12 @@ import java.util.List;
  * Created by deki kurnia on 23/03/16.
  */
 public class MyRecyclerAdapter extends RecyclerView.Adapter<FeedListRowHolder> {
-    ImageButton imgShare;
     private List<FeedItem> feedItemList;
     private Context mContext;
     private static final String TAG_PICTURE = "extra_fields_search";
     private static final String TAG_INTROTEXT = "introtext";
     private static final String TAG_IMAGECREDITS = "image_credits";
+    private static final String TAG_SHARELINK = "image_caption";
 
 
     public MyRecyclerAdapter(Context context, List<FeedItem> feedItemList) {
@@ -44,7 +44,7 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<FeedListRowHolder> {
     public void onBindViewHolder(FeedListRowHolder feedListRowHolder, final int i) {
         FeedItem feedItem = feedItemList.get(i);
 
-        Glide.with(mContext).load(feedItem.getThumbnail()).asBitmap()
+        Glide.with(mContext).load(feedItem.getThumbnail())
                 .error(R.drawable.placeholder)
                 .placeholder(R.drawable.placeholder)
                 .into(feedListRowHolder.thumbnail);
@@ -70,7 +70,11 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<FeedListRowHolder> {
             public void onClick(View view) {
                 switch (view.getId()) {
                     case R.id.imageShare:
-                        shareTextUrl();
+                        Intent share = new Intent(android.content.Intent.ACTION_SEND);
+                        share.setType("text/plain");
+                        share.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+                        share.putExtra(Intent.EXTRA_TEXT, feedItemList.get(i).getShareLink());
+                        mContext.startActivity(Intent.createChooser(share, "Share link "));
                         break;
                 }
             }
@@ -85,15 +89,4 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<FeedListRowHolder> {
     }
 
 
-    private void shareTextUrl() {
-        Intent share = new Intent(android.content.Intent.ACTION_SEND);
-        share.setType("text/plain");
-        share.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-
-        // Add data to the intent, the receiving app will decide
-        // what to do with it.
-        share.putExtra(Intent.EXTRA_TEXT, "http://www.newsmusik.co");
-
-        mContext.startActivity(Intent.createChooser(share, "Share link!"));
-    }
 }

@@ -13,9 +13,9 @@ import android.webkit.WebView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.text.Html;
 
 import com.bumptech.glide.Glide;
-import android.text.Html;
 
 public class ContentDetail extends Activity {
 
@@ -49,7 +49,6 @@ public class ContentDetail extends Activity {
         Glide
                 .with(this)
                 .load(picture)
-                .asBitmap()
                 .into(pic);
 
         TextView imgCredits = (TextView) findViewById(R.id.imageCredit);

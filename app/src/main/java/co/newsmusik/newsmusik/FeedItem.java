@@ -13,6 +13,7 @@ public class FeedItem implements Serializable {
     private String date;
     private String contentDetail;
     private String imageCredit;
+    private String shareLink;
 
     public String getTitle() {
         return title;
@@ -60,5 +61,13 @@ public class FeedItem implements Serializable {
 
     public void setImageCredit(String imageCredit) {
         this.imageCredit = imageCredit;
+    }
+
+    public String getShareLink() {
+        return shareLink;
+    }
+
+    public void setShareLink(String shareLink) {
+        this.shareLink = shareLink;
     }
 }

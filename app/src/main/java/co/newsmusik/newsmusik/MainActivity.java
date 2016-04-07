@@ -8,10 +8,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.SyncStateContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -24,9 +22,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
-import android.widget.ImageButton;
-import android.widget.Toast;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,7 +32,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Handler;
+
 import android.support.v4.widget.SwipeRefreshLayout;
+
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = "NewsMusik";
@@ -52,10 +50,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final String TAG_INTROTEXT = "introtext";
     private static final String TAG_CATEGORY = "name";
     private static final String TAG_IMAGECREDITS = "image_credits";
+    private static final String TAG_SHARELINK = "image_caption";
     SwipeRefreshLayout swipe;
-    private static final String TAG = MainActivity.class.getSimpleName();
-    private int offSet = 0;
-    int no;
+    protected Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,9 +60,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
         /* Initialize recyclerview */
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        swipe = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+        final LinearLayoutManager mLayoutManager;
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
 
         /*Downloading data from below url*/
         final String url = "http://api.newsmusik.co/articles";
@@ -106,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
     }
+
 
     @Override
     public void onBackPressed() {
@@ -268,6 +266,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 item.setDate(post.optString(TAG_DATE));
                 item.setContentDetail(post.optString(TAG_INTROTEXT));
                 item.setImageCredit(post.optString(TAG_IMAGECREDITS));
+                item.setShareLink(post.optString(TAG_SHARELINK));
                 feedItemList.add(item);
             }
 
