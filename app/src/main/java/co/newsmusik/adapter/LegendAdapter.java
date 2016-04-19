@@ -1,24 +1,27 @@
-package co.newsmusik.newsmusik;
+package co.newsmusik.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+
 import java.util.List;
 
+import co.newsmusik.activity.ContentDetail;
+import co.newsmusik.EndlessScrollListener;
+import co.newsmusik.FeedItem;
+import co.newsmusik.FeedListRowHolder;
+import co.newsmusik.R;
+
 /**
- * Created by deki kurnia on 23/03/16.
+ * Created by deki kurnia on 19/04/16.
  */
-public class MyRecyclerAdapter extends RecyclerView.Adapter<FeedListRowHolder> {
+public class LegendAdapter extends RecyclerView.Adapter<FeedListRowHolder>  {
     private List<FeedItem> feedItemList;
     private Context mContext;
     private static final String TAG_PICTURE = "extra_fields_search";
@@ -26,11 +29,11 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<FeedListRowHolder> {
     private static final String TAG_IMAGECREDITS = "image_credits";
     private static final String TAG_SHARELINK = "image_caption";
 
-
-    public MyRecyclerAdapter(Context context, List<FeedItem> feedItemList) {
+    public LegendAdapter(Context context, List<FeedItem> feedItemList) {
         this.feedItemList = feedItemList;
         this.mContext = context;
     }
+
 
     @Override
     public FeedListRowHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
@@ -42,6 +45,7 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<FeedListRowHolder> {
 
     @Override
     public void onBindViewHolder(FeedListRowHolder feedListRowHolder, final int i) {
+
         FeedItem feedItem = feedItemList.get(i);
 
         Glide.with(mContext).load(feedItem.getThumbnail())
@@ -87,6 +91,4 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<FeedListRowHolder> {
     public int getItemCount() {
         return (null != feedItemList ? feedItemList.size() : 0);
     }
-
-
 }

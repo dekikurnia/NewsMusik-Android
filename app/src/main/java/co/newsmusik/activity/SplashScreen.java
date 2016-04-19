@@ -1,8 +1,10 @@
-package co.newsmusik.newsmusik;
+package co.newsmusik.activity;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+
+import co.newsmusik.R;
 
 /**
  * Created by deki kurnia on 03/04/16.

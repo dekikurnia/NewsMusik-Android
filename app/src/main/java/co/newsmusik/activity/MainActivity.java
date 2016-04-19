@@ -1,30 +1,41 @@
-package co.newsmusik.newsmusik;
+package co.newsmusik.activity;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
+
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -32,10 +43,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Handler;
-
-import android.support.v4.widget.SwipeRefreshLayout;
-
+import co.newsmusik.EndlessScrollListener;
+import co.newsmusik.FeedItem;
+import co.newsmusik.R;
+import co.newsmusik.adapter.MyRecyclerAdapter;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = "NewsMusik";
@@ -51,8 +62,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final String TAG_CATEGORY = "name";
     private static final String TAG_IMAGECREDITS = "image_credits";
     private static final String TAG_SHARELINK = "image_caption";
-    SwipeRefreshLayout swipe;
-    protected Handler handler;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +77,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         final LinearLayoutManager mLayoutManager;
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.addOnScrollListener(new EndlessScrollListener(mLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount) {
+
+            }
+        });
 
         /*Downloading data from below url*/
         final String url = "http://api.newsmusik.co/articles";
@@ -86,13 +106,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        if(!isNetworkAvailable()){
+        if (!isNetworkAvailable()) {
             new AlertDialog.Builder(this)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setTitle("Warning")
                     .setMessage("Please check your internet connection")
-                    .setPositiveButton("Close", new DialogInterface.OnClickListener()
-                    {
+                    .setPositiveButton("Close", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             finish();
@@ -102,6 +121,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .show();
         }
 
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
 
@@ -115,8 +137,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             builder.setMessage("Yakin keluar aplikasi ?")
                     .setCancelable(false)
                     .setPositiveButton("Ya", new DialogInterface.OnClickListener() {
+                        @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
                         public void onClick(DialogInterface dialog, int id) {
-                            MainActivity.this.finish();
+                            finishAffinity();
                         }
                     })
                     .setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
@@ -154,39 +177,69 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        /*
+
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        if (id == R.id.legend) {
+            Intent intent = new Intent(MainActivity.this, LegendActivity.class);
+            startActivity(intent);
         }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
-        */
+
         return true;
 
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app URL is correct.
+                Uri.parse("android-app://co.newsmusik.activity/http/host/path")
+        );
+        AppIndex.AppIndexApi.start(client, viewAction);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app URL is correct.
+                Uri.parse("android-app://co.newsmusik.activity/http/host/path")
+        );
+        AppIndex.AppIndexApi.end(client, viewAction);
+        client.disconnect();
     }
 
     public class AsyncHttpTask extends AsyncTask<String, Void, Integer> {
         @Override
         protected void onPreExecute() {
-                pd = new ProgressDialog(MainActivity.this);
-                pd.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                pd.setMessage("Loading, please wait ...");
-                pd.setCancelable(false);
-                pd.show();
+            pd = new ProgressDialog(MainActivity.this);
+            pd.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            pd.setMessage("Loading, please wait ...");
+            pd.setCancelable(false);
+            pd.show();
         }
 
         @Override
@@ -207,7 +260,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 int statusCode = urlConnection.getResponseCode();
 
                 /* 200 represents HTTP OK */
-                if (statusCode ==  200) {
+                if (statusCode == 200) {
 
                     BufferedReader r = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
                     StringBuilder response = new StringBuilder();
@@ -218,7 +271,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                     parseResult(response.toString());
                     result = 1; // Successful
-                }else{
+                } else {
                     result = 0; //"Failed to fetch data!";
                 }
 
@@ -258,7 +311,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             for (int i = 0; i < posts.length(); i++) {
                 JSONObject post = posts.optJSONObject(i);
-
                 FeedItem item = new FeedItem();
                 item.setTitle(post.optString(TAG_TITLE));
                 item.setThumbnail(post.optString(TAG_PICTURE));
@@ -286,5 +338,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         return false;
     }
+
 
 }

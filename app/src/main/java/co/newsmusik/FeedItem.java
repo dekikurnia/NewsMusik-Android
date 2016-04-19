@@ -1,4 +1,4 @@
-package co.newsmusik.newsmusik;
+package co.newsmusik;
 
 import java.io.Serializable;
 

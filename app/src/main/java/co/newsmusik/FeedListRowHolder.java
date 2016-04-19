@@ -1,24 +1,23 @@
-package co.newsmusik.newsmusik;
+package co.newsmusik;
 
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
+
 
 /**
  * Created by deki kurnia on 23/03/16.
  */
 public class FeedListRowHolder extends RecyclerView.ViewHolder {
-    protected ImageView thumbnail;
-    protected TextView title;
-    protected TextView category;
-    protected TextView datetime;
-    protected CardView cardview;
-    protected ImageButton imgShare;
+    public ImageView thumbnail;
+    public TextView title;
+    public TextView category;
+    public TextView datetime;
+    public CardView cardview;
+    public ImageButton imgShare;
 
     public FeedListRowHolder(View view) {
         super(view);

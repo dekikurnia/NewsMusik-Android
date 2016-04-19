@@ -1,21 +1,18 @@
-package co.newsmusik.newsmusik;
+package co.newsmusik.activity;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.text.method.ScrollingMovementMethod;
-import android.view.Display;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.text.Html;
 
 import com.bumptech.glide.Glide;
+
+import co.newsmusik.R;
 
 public class ContentDetail extends Activity {
 
