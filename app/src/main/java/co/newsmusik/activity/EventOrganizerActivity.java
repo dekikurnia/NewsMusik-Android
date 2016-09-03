@@ -1,16 +1,8 @@
 package co.newsmusik.activity;
 
-import android.annotation.TargetApi;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -29,10 +21,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,13 +35,14 @@ import java.util.List;
 
 import co.newsmusik.FeedItem;
 import co.newsmusik.R;
-import co.newsmusik.adapter.MyRecyclerAdapter;
+import co.newsmusik.adapter.EventOrganizerAdapter;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener {
+
+public class EventOrganizerActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener {
     private static final String TAG = "NewsMusik";
     List<FeedItem> feedItemList = new ArrayList<FeedItem>();
     private RecyclerView mRecyclerView;
-    private MyRecyclerAdapter adapter;
+    private EventOrganizerAdapter adapter;
     ProgressDialog pd;
     private static final String DATA = "data";
     private static final String TAG_PICTURE = "extra_fields_search";
@@ -63,11 +52,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final String TAG_CATEGORY = "name";
     private static final String TAG_IMAGECREDITS = "image_credits";
     private static final String TAG_SHARELINK = "image_caption";
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,9 +63,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-
         /*Downloading data from below url*/
-        final String url = "http://api.newsmusik.co/articles";
+        final String url = "http://api.newsmusik.co/event-organizer";
         new AsyncHttpTask().execute(url);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -102,56 +85,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        if (!isNetworkAvailable()) {
-            new AlertDialog.Builder(this)
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .setTitle("Warning")
-                    .setMessage("Please check your internet connection")
-                    .setPositiveButton("Close", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            finish();
-                        }
-
-                    })
-                    .show();
-        }
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
-
     }
 
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("Yakin keluar aplikasi ?")
-                    .setCancelable(false)
-                    .setPositiveButton("Ya", new DialogInterface.OnClickListener() {
-                        @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-                        public void onClick(DialogInterface dialog, int id) {
-                            finishAffinity();
-                        }
-                    })
-                    .setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                        }
-                    });
-            AlertDialog alert = builder.create();
-            alert.show();
-        }
+        Intent intent = new Intent(EventOrganizerActivity.this, MainActivity.class);
+        startActivity(intent);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_search, menu);
         MenuItem searchItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
@@ -173,6 +117,91 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         return true; // Return true to expand action view
                     }
                 });
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.home) {
+            Intent intent = new Intent(EventOrganizerActivity.this, MainActivity.class);
+            startActivity(intent);
+        }
+
+        if (id == R.id.news) {
+            Intent intent = new Intent(EventOrganizerActivity.this, NewsActivity.class);
+            startActivity(intent);
+        }
+
+        if (id == R.id.legend) {
+            Intent intent = new Intent(EventOrganizerActivity.this, LegendActivity.class);
+            startActivity(intent);
+        }
+
+        if (id == R.id.interview) {
+            Intent intent = new Intent(EventOrganizerActivity.this, ExclusiveInterviewActivity.class);
+            startActivity(intent);
+        }
+
+        if (id == R.id.story) {
+            Intent intent = new Intent(EventOrganizerActivity.this, ExclusiveStoryActivity.class);
+            startActivity(intent);
+        }
+
+        if (id == R.id.male) {
+            Intent intent = new Intent(EventOrganizerActivity.this, MaleActivity.class);
+            startActivity(intent);
+        }
+
+        if (id == R.id.female) {
+            Intent intent = new Intent(EventOrganizerActivity.this, FemaleActivity.class);
+            startActivity(intent);
+        }
+
+        if (id == R.id.groupband) {
+            Intent intent = new Intent(EventOrganizerActivity.this, GroupBandActivity.class);
+            startActivity(intent);
+        }
+
+        if (id == R.id.album) {
+            Intent intent = new Intent(EventOrganizerActivity.this, AlbumActivity.class);
+            startActivity(intent);
+        }
+
+        if (id == R.id.moviesandtv) {
+            Intent intent = new Intent(EventOrganizerActivity.this, MoviesAndTVActivity.class);
+            startActivity(intent);
+        }
+
+        if (id == R.id.backstagestory) {
+            Intent intent = new Intent(EventOrganizerActivity.this, BackstageStoryActivity.class);
+            startActivity(intent);
+        }
+
+        if (id == R.id.fashion) {
+            Intent intent = new Intent(EventOrganizerActivity.this, FashionActivity.class);
+            startActivity(intent);
+        }
+
+        if (id == R.id.eventorganizer) {
+            Intent intent = new Intent(EventOrganizerActivity.this, EventOrganizerActivity.class);
+            startActivity(intent);
+        }
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+
         return true;
     }
 
@@ -201,136 +230,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return filteredModelList;
     }
 
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
-    }
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.home) {
-            Intent intent = new Intent(MainActivity.this, MainActivity.class);
-            startActivity(intent);
-        }
-
-        if (id == R.id.news) {
-            Intent intent = new Intent(MainActivity.this, NewsActivity.class);
-            startActivity(intent);
-        }
-
-        if (id == R.id.legend) {
-            Intent intent = new Intent(MainActivity.this, LegendActivity.class);
-            startActivity(intent);
-        }
-
-        if (id == R.id.interview) {
-            Intent intent = new Intent(MainActivity.this, ExclusiveInterviewActivity.class);
-            startActivity(intent);
-        }
-
-        if (id == R.id.story) {
-            Intent intent = new Intent(MainActivity.this, ExclusiveStoryActivity.class);
-            startActivity(intent);
-        }
-
-        if (id == R.id.male) {
-            Intent intent = new Intent(MainActivity.this, MaleActivity.class);
-            startActivity(intent);
-        }
-
-        if (id == R.id.female) {
-            Intent intent = new Intent(MainActivity.this, FemaleActivity.class);
-            startActivity(intent);
-        }
-
-        if (id == R.id.groupband) {
-            Intent intent = new Intent(MainActivity.this, GroupBandActivity.class);
-            startActivity(intent);
-        }
-
-        if (id == R.id.album) {
-            Intent intent = new Intent(MainActivity.this, AlbumActivity.class);
-            startActivity(intent);
-        }
-
-        if (id == R.id.moviesandtv) {
-            Intent intent = new Intent(MainActivity.this, MoviesAndTVActivity.class);
-            startActivity(intent);
-        }
-
-        if (id == R.id.backstagestory) {
-            Intent intent = new Intent(MainActivity.this, BackstageStoryActivity.class);
-            startActivity(intent);
-        }
-
-        if (id == R.id.fashion) {
-            Intent intent = new Intent(MainActivity.this, FashionActivity.class);
-            startActivity(intent);
-        }
-
-        if (id == R.id.eventorganizer) {
-            Intent intent = new Intent(MainActivity.this, EventOrganizerActivity.class);
-            startActivity(intent);
-        }
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-
-        return true;
-
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "Main Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app URL is correct.
-                Uri.parse("android-app://co.newsmusik/http/host/path")
-        );
-        AppIndex.AppIndexApi.start(client, viewAction);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "Main Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app URL is correct.
-                Uri.parse("android-app://co.newsmusik/http/host/path")
-        );
-        AppIndex.AppIndexApi.end(client, viewAction);
-        client.disconnect();
-    }
-
-
     public class AsyncHttpTask extends AsyncTask<String, Void, Integer> {
         @Override
         protected void onPreExecute() {
-            pd = new ProgressDialog(MainActivity.this);
+            pd = new ProgressDialog(EventOrganizerActivity.this);
             pd.requestWindowFeature(Window.FEATURE_NO_TITLE);
             pd.setMessage("Loading, Please wait ...");
             pd.setCancelable(false);
@@ -355,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 int statusCode = urlConnection.getResponseCode();
 
                 /* 200 represents HTTP OK */
-                if (statusCode == 200) {
+                if (statusCode ==  200) {
 
                     BufferedReader r = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
                     StringBuilder response = new StringBuilder();
@@ -366,7 +269,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                     parseResult(response.toString());
                     result = 1; // Successful
-                } else {
+                }else{
                     result = 0; //"Failed to fetch data!";
                 }
 
@@ -383,7 +286,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             /* Download complete. Lets update UI */
             if (result == 1) {
-                adapter = new MyRecyclerAdapter(MainActivity.this, feedItemList);
+                adapter = new EventOrganizerAdapter(EventOrganizerActivity.this, feedItemList);
                 mRecyclerView.setAdapter(adapter);
 
             } else {
@@ -420,18 +323,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    }
-
-    public boolean isNetworkAvailable() {
-        ConnectivityManager cm = (ConnectivityManager)
-                getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-        // if no network is available networkInfo will be null
-        // otherwise check if we are connected
-        if (networkInfo != null && networkInfo.isConnected()) {
-            return true;
-        }
-        return false;
     }
 
 

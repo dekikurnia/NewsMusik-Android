@@ -1,0 +1,5 @@
+@startuml
+Server -> Client: Authentication Request
+Cliet --> Server: Authentication Response
+
+@enduml

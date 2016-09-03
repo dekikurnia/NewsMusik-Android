@@ -1,0 +1,29 @@
+@startuml
+
+
+class FeedItem {
+private String title;
+private String thumbnail;
+private String category;
+private String date;
+private String contentDetail;
+private String imageCredit;
+private String shareLink;
+
+public String getTitle()
+public void setTitle(String title)
+public String getThumbnail()
+public void setThumbnail(String thumbnail)
+public String getCategory()
+public void setCategory(String category)
+public String getDate()
+public void setDate(String date)
+public String getContentDetail()
+public void setContentDetail(String contentDetail)
+public String getImageCredit()
+public void setImageCredit(String imageCredit)
+public String getShareLink()
+public void setShareLink(String shareLink)
+}
+
+@enduml

@@ -29,4 +29,5 @@ public class FeedListRowHolder extends RecyclerView.ViewHolder {
         this.imgShare = (ImageButton) view.findViewById(R.id.imageShare);
     }
 
+
 }

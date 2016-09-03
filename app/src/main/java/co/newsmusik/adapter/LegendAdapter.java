@@ -10,10 +10,10 @@ import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import co.newsmusik.activity.ContentDetail;
-import co.newsmusik.EndlessScrollListener;
 import co.newsmusik.FeedItem;
 import co.newsmusik.FeedListRowHolder;
 import co.newsmusik.R;
@@ -90,5 +90,11 @@ public class LegendAdapter extends RecyclerView.Adapter<FeedListRowHolder>  {
     @Override
     public int getItemCount() {
         return (null != feedItemList ? feedItemList.size() : 0);
+    }
+
+    public void setFilter(List<FeedItem> itemModels) {
+        feedItemList = new ArrayList<>();
+        feedItemList.addAll(itemModels);
+        notifyDataSetChanged();
     }
 }

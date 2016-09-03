@@ -3,6 +3,12 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/home"
+            android:title="Home" />
+    </group>
+
+    <group android:checkableBehavior="single">
+        <item
             android:id="@+id/news"
             android:title="News" />
     </group>

@@ -5,8 +5,11 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -28,13 +31,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import co.newsmusik.EndlessScrollListener;
 import co.newsmusik.FeedItem;
 import co.newsmusik.R;
 import co.newsmusik.adapter.LegendAdapter;
 
 
-public class LegendActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class LegendActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener {
     private static final String TAG = "NewsMusik";
     List<FeedItem> feedItemList = new ArrayList<FeedItem>();
     private RecyclerView mRecyclerView;
@@ -58,12 +60,7 @@ public class LegendActivity extends AppCompatActivity implements NavigationView.
         final LinearLayoutManager mLayoutManager;
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.addOnScrollListener(new EndlessScrollListener(mLayoutManager) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount) {
 
-            }
-        });
 
         /*Downloading data from below url*/
         final String url = "http://api.newsmusik.co/legends";
@@ -98,8 +95,27 @@ public class LegendActivity extends AppCompatActivity implements NavigationView.
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.menu_search, menu);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setQueryHint("Cari Artikel...");
+        searchView.setOnQueryTextListener(this);
+
+        MenuItemCompat.setOnActionExpandListener(searchItem,
+                new MenuItemCompat.OnActionExpandListener() {
+                    @Override
+                    public boolean onMenuItemActionCollapse(MenuItem item) {
+                        // Do something when collapsed
+                        adapter.setFilter(feedItemList);
+                        return true; // Return true to collapse action view
+                    }
+
+                    @Override
+                    public boolean onMenuItemActionExpand(MenuItem item) {
+                        // Do something when expanded
+                        return true; // Return true to expand action view
+                    }
+                });
         return true;
     }
 
@@ -108,12 +124,7 @@ public class LegendActivity extends AppCompatActivity implements NavigationView.
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -121,29 +132,101 @@ public class LegendActivity extends AppCompatActivity implements NavigationView.
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        /*
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        if (id == R.id.home) {
+            Intent intent = new Intent(LegendActivity.this, MainActivity.class);
+            startActivity(intent);
         }
 
+        if (id == R.id.news) {
+            Intent intent = new Intent(LegendActivity.this, NewsActivity.class);
+            startActivity(intent);
+        }
+
+        if (id == R.id.legend) {
+            Intent intent = new Intent(LegendActivity.this, LegendActivity.class);
+            startActivity(intent);
+        }
+
+        if (id == R.id.interview) {
+            Intent intent = new Intent(LegendActivity.this, ExclusiveInterviewActivity.class);
+            startActivity(intent);
+        }
+
+        if (id == R.id.story) {
+            Intent intent = new Intent(LegendActivity.this, ExclusiveStoryActivity.class);
+            startActivity(intent);
+        }
+
+        if (id == R.id.male) {
+            Intent intent = new Intent(LegendActivity.this, MaleActivity.class);
+            startActivity(intent);
+        }
+
+        if (id == R.id.female) {
+            Intent intent = new Intent(LegendActivity.this, FemaleActivity.class);
+            startActivity(intent);
+        }
+
+        if (id == R.id.groupband) {
+            Intent intent = new Intent(LegendActivity.this, GroupBandActivity.class);
+            startActivity(intent);
+        }
+
+        if (id == R.id.album) {
+            Intent intent = new Intent(LegendActivity.this, AlbumActivity.class);
+            startActivity(intent);
+        }
+
+        if (id == R.id.moviesandtv) {
+            Intent intent = new Intent(LegendActivity.this, MoviesAndTVActivity.class);
+            startActivity(intent);
+        }
+
+        if (id == R.id.backstagestory) {
+            Intent intent = new Intent(LegendActivity.this, BackstageStoryActivity.class);
+            startActivity(intent);
+        }
+
+        if (id == R.id.fashion) {
+            Intent intent = new Intent(LegendActivity.this, FashionActivity.class);
+            startActivity(intent);
+        }
+
+        if (id == R.id.eventorganizer) {
+            Intent intent = new Intent(LegendActivity.this, EventOrganizerActivity.class);
+            startActivity(intent);
+        }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
-        */
-        return true;
 
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        final List<FeedItem> filteredModelList = filter(feedItemList, newText);
+        adapter.setFilter(filteredModelList);
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    private List<FeedItem> filter(List<FeedItem> models, String query) {
+        query = query.toLowerCase();
+
+        final List<FeedItem> filteredModelList = new ArrayList<>();
+        for (FeedItem model : models) {
+            final String text = model.getTitle().toLowerCase();
+            if (text.contains(query)) {
+                filteredModelList.add(model);
+            }
+        }
+        return filteredModelList;
     }
 
     public class AsyncHttpTask extends AsyncTask<String, Void, Integer> {
@@ -151,7 +234,7 @@ public class LegendActivity extends AppCompatActivity implements NavigationView.
         protected void onPreExecute() {
             pd = new ProgressDialog(LegendActivity.this);
             pd.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            pd.setMessage("Loading, please wait ...");
+            pd.setMessage("Loading, Please wait ...");
             pd.setCancelable(false);
             pd.show();
         }

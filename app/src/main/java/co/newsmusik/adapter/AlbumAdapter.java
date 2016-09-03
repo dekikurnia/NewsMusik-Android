@@ -14,13 +14,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.newsmusik.FeedItem;
-import co.newsmusik.activity.ContentDetail;
 import co.newsmusik.FeedListRowHolder;
 import co.newsmusik.R;
+import co.newsmusik.activity.ContentDetail;
+
 /**
- * Created by deki kurnia on 23/03/16.
+ * Created by deki kurnia on 19/04/16.
  */
-public class MyRecyclerAdapter extends RecyclerView.Adapter<FeedListRowHolder> {
+public class AlbumAdapter extends RecyclerView.Adapter<FeedListRowHolder>  {
     private List<FeedItem> feedItemList;
     private Context mContext;
     private static final String TAG_PICTURE = "extra_fields_search";
@@ -28,7 +29,7 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<FeedListRowHolder> {
     private static final String TAG_IMAGECREDITS = "image_credits";
     private static final String TAG_SHARELINK = "image_caption";
 
-    public MyRecyclerAdapter(Context context, List<FeedItem> feedItemList) {
+    public AlbumAdapter(Context context, List<FeedItem> feedItemList) {
         this.feedItemList = feedItemList;
         this.mContext = context;
     }
@@ -36,10 +37,10 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<FeedListRowHolder> {
 
     @Override
     public FeedListRowHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-            View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_row, null);
-            FeedListRowHolder mh = new FeedListRowHolder(v);
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_row, null);
+        FeedListRowHolder mh = new FeedListRowHolder(v);
 
-            return mh;
+        return mh;
     }
 
     @Override
@@ -96,5 +97,4 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<FeedListRowHolder> {
         feedItemList.addAll(itemModels);
         notifyDataSetChanged();
     }
-
 }
