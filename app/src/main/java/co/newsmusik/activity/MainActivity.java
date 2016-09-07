@@ -45,11 +45,14 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import co.newsmusik.FeedItem;
 import co.newsmusik.R;
 import co.newsmusik.adapter.MyRecyclerAdapter;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener {
     private static final String TAG = "NewsMusik";
@@ -69,6 +72,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final String TAG_CATEGORY = "name";
     private static final String TAG_IMAGECREDITS = "image_credits";
     private static final String TAG_SHARELINK = "image_caption";
+    String result=null;
+    JSONArray posts;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -385,17 +390,45 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         @Override
         protected void onPostExecute(Integer result) {
             pd.dismiss();
+            adapter = new MyRecyclerAdapter(MainActivity.this, feedItemList);
+            mRecyclerView.setAdapter(adapter);
 
-            /* Download complete. Lets update UI */
-            if (result == 1) {
-                adapter = new MyRecyclerAdapter(MainActivity.this, feedItemList);
-                mRecyclerView.setAdapter(adapter);
+        }
 
-            } else {
-                Log.e(TAG, "Failed to fetch data!");
+    }
+
+
+    private void loadData(String result) {
+        try {
+            isLoading = false;
+            int index = adapter.getItemCount();
+            int end = index + PAGE_SIZE;
+            JSONObject response = new JSONObject(result);
+            JSONArray posts = response.optJSONArray(DATA);
+            if (null == feedItemList) {
+                feedItemList = new ArrayList<FeedItem>();
             }
+            if (end <= posts.length()) {
+                for (int i = index; i < end; i++) {
+                    JSONObject post = posts.optJSONObject(i);
+                    FeedItem item = new FeedItem();
+                    item.setTitle(post.optString(TAG_TITLE));
+                    item.setThumbnail(post.optString(TAG_PICTURE));
+                    item.setCategory(post.optString(TAG_CATEGORY));
+                    item.setDate(post.optString(TAG_DATE));
+                    item.setContentDetail(post.optString(TAG_INTROTEXT));
+                    item.setImageCredit(post.optString(TAG_IMAGECREDITS));
+                    item.setShareLink(post.optString(TAG_SHARELINK));
+                    feedItemList.add(item);
 
-
+                    adapter.addAll(feedItemList);
+                    if (end >= posts.length()) {
+                        adapter.setLoading(false);
+                    }
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
@@ -422,50 +455,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 item.setShareLink(post.optString(TAG_SHARELINK));
                 feedItemList.add(item);
             }
+            adapter.addAll(feedItemList);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
-
-    private void loadData(String result) {
-        try {
-            isLoading = false;
-            int index = adapter.getItemCount();
-            int end = index + PAGE_SIZE;
-            JSONObject response = new JSONObject(result);
-            JSONArray posts = response.optJSONArray(DATA);
-
-            /*Initialize array if null*/
-            if (null == feedItemList) {
-                feedItemList = new ArrayList<FeedItem>();
-            }
-
-            if (end <= posts.length()) {
-                for (int i = index; i < end; i++) {
-                    JSONObject post = posts.optJSONObject(i);
-                    FeedItem item = new FeedItem();
-                    item.setTitle(post.optString(TAG_TITLE));
-                    item.setThumbnail(post.optString(TAG_PICTURE));
-                    item.setCategory(post.optString(TAG_CATEGORY));
-                    item.setDate(post.optString(TAG_DATE));
-                    item.setContentDetail(post.optString(TAG_INTROTEXT));
-                    item.setImageCredit(post.optString(TAG_IMAGECREDITS));
-                    item.setShareLink(post.optString(TAG_SHARELINK));
-                    feedItemList.add(item);
-
-                    adapter.addAll(feedItemList);
-                    if (end >= posts.length()) {
-                        adapter.setLoading(false);
-                    }
-                }
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-
 
     public boolean isNetworkAvailable() {
         ConnectivityManager cm = (ConnectivityManager)
@@ -478,7 +473,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         return false;
     }
-
     private RecyclerView.OnScrollListener recyclerViewOnScrollListener = new RecyclerView.OnScrollListener() {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -500,9 +494,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-
+                            loadData(result);
                         }
-                    }, 2000);
+                    }, 1000);
                 }
             }
         }
