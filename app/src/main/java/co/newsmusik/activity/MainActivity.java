@@ -12,6 +12,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -54,6 +56,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     List<FeedItem> feedItemList = new ArrayList<FeedItem>();
     private RecyclerView mRecyclerView;
     private MyRecyclerAdapter adapter;
+    private LinearLayoutManager linearLayoutManager;
+    private int PAGE_SIZE = 10;
+    private boolean isLastPage = false;
+    private boolean isLoading = false;
     ProgressDialog pd;
     private static final String DATA = "data";
     private static final String TAG_PICTURE = "extra_fields_search";
@@ -75,10 +81,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
         /* Initialize recyclerview */
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        final LinearLayoutManager mLayoutManager;
-        mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-
+        linearLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+        mRecyclerView.addOnScrollListener(recyclerViewOnScrollListener);
 
         /*Downloading data from below url*/
         final String url = "http://api.newsmusik.co/articles";
@@ -122,7 +127,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
 
     }
-
 
     @Override
     public void onBackPressed() {
@@ -371,10 +375,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
 
             } catch (Exception e) {
-                Log.d(TAG, e.getLocalizedMessage());
+                Log.e (e.getClass().getName(), e.getMessage()==null?"":e.getMessage(),e.getCause());
             }
 
             return result; //"Failed to fetch data!";
+
         }
 
         @Override
@@ -390,6 +395,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Log.e(TAG, "Failed to fetch data!");
             }
 
+
         }
     }
 
@@ -404,7 +410,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 feedItemList = new ArrayList<FeedItem>();
             }
 
-            for (int i = 0; i < posts.length(); i++) {
+            for (int i = 0; i < PAGE_SIZE; i++) {
                 JSONObject post = posts.optJSONObject(i);
                 FeedItem item = new FeedItem();
                 item.setTitle(post.optString(TAG_TITLE));
@@ -422,6 +428,45 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    private void loadData(String result) {
+        try {
+            isLoading = false;
+            int index = adapter.getItemCount();
+            int end = index + PAGE_SIZE;
+            JSONObject response = new JSONObject(result);
+            JSONArray posts = response.optJSONArray(DATA);
+
+            /*Initialize array if null*/
+            if (null == feedItemList) {
+                feedItemList = new ArrayList<FeedItem>();
+            }
+
+            if (end <= posts.length()) {
+                for (int i = index; i < end; i++) {
+                    JSONObject post = posts.optJSONObject(i);
+                    FeedItem item = new FeedItem();
+                    item.setTitle(post.optString(TAG_TITLE));
+                    item.setThumbnail(post.optString(TAG_PICTURE));
+                    item.setCategory(post.optString(TAG_CATEGORY));
+                    item.setDate(post.optString(TAG_DATE));
+                    item.setContentDetail(post.optString(TAG_INTROTEXT));
+                    item.setImageCredit(post.optString(TAG_IMAGECREDITS));
+                    item.setShareLink(post.optString(TAG_SHARELINK));
+                    feedItemList.add(item);
+
+                    adapter.addAll(feedItemList);
+                    if (end >= posts.length()) {
+                        adapter.setLoading(false);
+                    }
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
     public boolean isNetworkAvailable() {
         ConnectivityManager cm = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -434,5 +479,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return false;
     }
 
+    private RecyclerView.OnScrollListener recyclerViewOnScrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+        }
 
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+            int visibleItemCount = linearLayoutManager.getChildCount();
+            int totalItemCount = linearLayoutManager.getItemCount();
+            int firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition();
+
+            if (!isLoading && !isLastPage) {
+                if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
+                        && firstVisibleItemPosition >= 0
+                        && totalItemCount >= PAGE_SIZE) {
+                    isLoading = true;
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+
+                        }
+                    }, 2000);
+                }
+            }
+        }
+    };
 }

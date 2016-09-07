@@ -3,8 +3,8 @@
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:id="@+id/cardlist_item"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="8dp"
+    android:layout_height="110dp"
+    android:layout_margin="0dp"
     android:foreground="?android:attr/selectableItemBackground"
     android:orientation="horizontal"
     card_view:cardCornerRadius="2dp"
@@ -22,9 +22,10 @@
         <ImageView
             android:id="@+id/thumbnail"
             android:layout_width="100dp"
-            android:layout_height="87dp"
+            android:layout_height="match_parent"
             android:scaleType="fitXY"
-            android:src="@drawable/placeholder" />
+            android:src="@drawable/placeholder"
+            android:layout_alignParentBottom="true" />
 
         <TextView
             android:id="@+id/title"
