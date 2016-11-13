@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,15 +42,12 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         this.mContext = context;
     }
 
-    public MyRecyclerAdapter() {
-        feedItemList = new ArrayList<>();
-    }
-
 
     private void add(FeedItem item) {
         feedItemList.add(item);
         notifyItemInserted(feedItemList.size() - 1);
     }
+
 
     public void addAll(List<FeedItem> feedItemList) {
         for (FeedItem feedItem : feedItemList) {
@@ -159,6 +157,10 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     public void setLoading(boolean loading){
         this.loading = loading;
+    }
+
+    public void setLoaded(){
+        loading = false;
     }
 
 
